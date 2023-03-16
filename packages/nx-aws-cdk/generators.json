@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "name": "nx-aws-cdk",
+  "version": "0.0.1",
+  "generators": {
+    "nx-aws-cdk": {
+      "factory": "./src/generators/nx-aws-cdk/generator",
+      "schema": "./src/generators/nx-aws-cdk/schema.json",
+      "description": "nx-aws-cdk generator"
+    }
+  }
+}
