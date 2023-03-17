@@ -7,6 +7,11 @@
       "factory": "./src/generators/nx-aws-cdk/generator",
       "schema": "./src/generators/nx-aws-cdk/schema.json",
       "description": "nx-aws-cdk generator"
+    },
+    "init": {
+      "factory": "./src/generators/init/generator",
+      "schema": "./src/generators/init/schema.json",
+      "description": "init generator"
     }
   }
 }
