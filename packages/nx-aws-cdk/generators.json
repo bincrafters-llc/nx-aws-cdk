@@ -3,10 +3,10 @@
   "name": "nx-aws-cdk",
   "version": "0.0.1",
   "generators": {
-    "nx-aws-cdk": {
-      "factory": "./src/generators/nx-aws-cdk/generator",
-      "schema": "./src/generators/nx-aws-cdk/schema.json",
-      "description": "nx-aws-cdk generator"
+    "app": {
+      "factory": "./src/generators/app/generator",
+      "schema": "./src/generators/app/schema.json",
+      "description": "app generator"
     },
     "init": {
       "factory": "./src/generators/init/generator",

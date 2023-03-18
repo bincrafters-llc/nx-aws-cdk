@@ -33,7 +33,7 @@ function normalizeOptions(
     ? `${names(options.directory).fileName}/${name}`
     : name;
   const projectName = projectDirectory.replace(new RegExp('/', 'g'), '-');
-  const projectRoot = `${getWorkspaceLayout(tree).libsDir}/${projectDirectory}`;
+  const projectRoot = `${getWorkspaceLayout(tree).appsDir}/${projectDirectory}`;
   const parsedTags = options.tags
     ? options.tags.split(',').map((s) => s.trim())
     : [];
@@ -94,8 +94,6 @@ async function addLintingToApplication(
 export default async function (tree: Tree, options: NxAwsCdkGeneratorSchema) {
   const tasks: GeneratorCallback[] = [];
   const normalizedOptions = normalizeOptions(tree, options);
-  console.log('*** Running Init Task ***');
-  
   const initTask = await initGenerator(tree, {
     ...options,
     skipFormat: true,
@@ -103,7 +101,6 @@ export default async function (tree: Tree, options: NxAwsCdkGeneratorSchema) {
 
   tasks.push(initTask);
 
-  console.log('*** Adding project configuration ***');
   addProjectConfiguration(tree, normalizedOptions.projectName, {
     root: normalizedOptions.projectRoot,
     projectType: 'application',
@@ -116,17 +113,14 @@ export default async function (tree: Tree, options: NxAwsCdkGeneratorSchema) {
     tags: normalizedOptions.parsedTags,
   });
 
-  console.log('*** Adding files ***');
   addFiles(tree, normalizedOptions);
 
-  console.log('*** Running Linter ***');
   if (normalizedOptions.linter !== Linter.None) {
     const lintTask = await addLintingToApplication(tree, normalizedOptions);
     tasks.push(lintTask);
     updateLintConfig(tree, normalizedOptions);
   }
 
-  console.log('*** Running Jest ***');
   if (normalizedOptions.unitTestRunner === 'jest') {
     const jestTask = await jestProjectGenerator(tree, {
       project: normalizedOptions.projectName,
