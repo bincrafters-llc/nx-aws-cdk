@@ -106,8 +106,17 @@ export default async function (tree: Tree, options: NxAwsCdkGeneratorSchema) {
     projectType: 'application',
     sourceRoot: `${normalizedOptions.projectRoot}/src`,
     targets: {
-      build: {
-        executor: '@bincrafters/nx-aws-cdk:build',
+      bootstrap: {
+        executor: '@bincrafters/nx-aws-cdk:bootstrap',
+        options: {}
+      },
+      deploy: {
+        executor: '@bincrafters/nx-aws-cdk:deploy',
+        options: {}
+      },
+      destroy: {
+        executor: '@bincrafters/nx-aws-cdk:destroy',
+        options: {}
       },
     },
     tags: normalizedOptions.parsedTags,

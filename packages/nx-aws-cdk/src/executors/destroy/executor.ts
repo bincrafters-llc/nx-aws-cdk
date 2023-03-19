@@ -1,4 +1,5 @@
 import { ExecutorContext } from '@nrwl/devkit';
+import path = require('path');
 import { ParsedExecutorInterface } from '../../interfaces/parsed-executor.interface';
 import { createCommand, parseArgs, runCommandProcess } from '../../utils/executor.util';
 import { DestroyExecutorSchema } from './schema';
@@ -9,7 +10,6 @@ export interface ParsedDestroyExecutorOption extends ParsedExecutorInterface {
   sourceRoot: string;
   root: string;
 }
-
 
 export default async function runExecutor(
   options: DestroyExecutorSchema,
