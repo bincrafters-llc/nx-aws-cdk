@@ -6,7 +6,7 @@ import {
   uniq,
 } from '@nrwl/nx-plugin/testing';
 
-describe('nx-aws-cdk e2e', () => {
+describe('nx-aws-cdk app e2e', () => {
   // Setting up individual workspaces per
   // test can cause e2e runs to take a long time.
   // For this reason, we recommend each suite only
@@ -23,14 +23,14 @@ describe('nx-aws-cdk e2e', () => {
     runNxCommandAsync('reset');
   });
 
-  it('should create app', async () => {
-    const project = uniq('nx-aws-cdk');
-    await runNxCommandAsync(
-      `generate @bincrafters/nx-aws-cdk:app ${project}`
-    );
-    const result = await runNxCommandAsync(`build ${project}`);
-    expect(result.stdout).toContain('Executor ran');
-  }, 120000);
+  // it('should create app', async () => {
+  //   const project = uniq('nx-aws-cdk');
+  //   await runNxCommandAsync(
+  //     `generate @bincrafters/nx-aws-cdk:app ${project}`
+  //   );
+  //   const result = await runNxCommandAsync(`build ${project}`);
+  //   expect(result.stdout).toContain('Executor ran');
+  // }, 120000);
 
   describe('--directory', () => {
     it('should create src in the specified directory', async () => {

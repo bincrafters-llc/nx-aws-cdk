@@ -9,6 +9,7 @@ import {
   offsetFromRoot,
   Tree,
   updateJson,
+  workspaceRoot,
 } from '@nrwl/devkit';
 import * as path from 'path';
 import { NxAwsCdkGeneratorSchema } from './schema';
@@ -19,12 +20,13 @@ import { runTasksInSerial } from '@nrwl/workspace/src/utilities/run-tasks-in-ser
 
 interface NormalizedSchema extends NxAwsCdkGeneratorSchema {
   projectName: string;
+  distRoot: string;
   projectRoot: string;
   projectDirectory: string;
   parsedTags: string[];
 }
 
-function normalizeOptions(
+export function normalizeOptions(
   tree: Tree,
   options: NxAwsCdkGeneratorSchema
 ): NormalizedSchema {
@@ -33,6 +35,7 @@ function normalizeOptions(
     ? `${names(options.directory).fileName}/${name}`
     : name;
   const projectName = projectDirectory.replace(new RegExp('/', 'g'), '-');
+  const distRoot = `${workspaceRoot}/dist`;
   const projectRoot = `${getWorkspaceLayout(tree).appsDir}/${projectDirectory}`;
   const parsedTags = options.tags
     ? options.tags.split(',').map((s) => s.trim())
@@ -41,6 +44,7 @@ function normalizeOptions(
   return {
     ...options,
     projectName,
+    distRoot,
     projectRoot,
     projectDirectory,
     parsedTags,
@@ -109,6 +113,15 @@ export default async function (tree: Tree, options: NxAwsCdkGeneratorSchema) {
       bootstrap: {
         executor: '@bincrafters/nx-aws-cdk:bootstrap',
         options: {}
+      },
+      build: {
+        executor: '@nrwl/js:tsc',
+        options: {
+          outputPath: `${normalizedOptions.distRoot}/apps/${normalizedOptions.projectName}`,
+          main: `${normalizedOptions.projectRoot}/src/app.ts`,
+          tsConfig: `${normalizedOptions.projectRoot}/tsconfig.app.json`,
+          assets: ["libs/ts-lib/*.md"],
+        }
       },
       deploy: {
         executor: '@bincrafters/nx-aws-cdk:deploy',
