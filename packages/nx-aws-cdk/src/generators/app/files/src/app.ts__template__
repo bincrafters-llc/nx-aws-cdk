@@ -1,7 +1,27 @@
-import * as cdk from 'aws-cdk-lib';
+import { aws_cdk } from 'truemark-cdk-lib';
 import { MyStack } from './stacks/my-stack';
 
-const app = new cdk.App();
+const app = new aws_cdk.ExtendedApp({
+  standardTags: {
+    teamTags: {
+      name: '<team name>',
+      contactEmail: '<contact email>',
+      contactName: '<contact name>',
+      contactPhone: '<contact phone>',
+      // ...
+    },
+    securityTags: {
+      // ...
+    },
+    costCenterTags: {
+      // ...
+    },
+    automationTags: {
+      // ...
+    }
+  }
+})
+
 new MyStack(app, 'CdkTemplateStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,

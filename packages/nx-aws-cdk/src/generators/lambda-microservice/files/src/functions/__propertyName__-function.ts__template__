@@ -1,0 +1,29 @@
+import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
+import { <%= className %>Service } from '../core/<%= fileName %>.service';
+import { HttpService } from '../core/http.service';
+import { TableService } from '../core/table.service';
+import { ValidationService } from '../core/validation.service';
+
+const tableName = process.env.<%= constantName %>_TABLE_NAME;
+
+if (!tableName) throw Error('Table name is required');
+
+const tableService = new TableService(tableName);
+const validationService = new ValidationService();
+const service = new <%= className %>Service(tableService, validationService);
+
+export async function handler(event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> {
+    const id = event.pathParameters ? event.pathParameters['id'] : null;
+    switch (event.httpMethod) {
+        case 'GET':
+            return id ? service.get(id) : service.search(event.queryStringParameters);
+        case 'POST':
+            return service.create(event.body);
+        case 'PATCH':
+            return service.update(event.body);
+        case 'DELETE':
+            return service.remove(id);    
+        default:
+            return HttpService.MethodNotAllowed(event.httpMethod);
+    }
+}

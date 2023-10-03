@@ -1,4 +1,4 @@
-import { ExecutorContext } from '@nrwl/devkit';
+import { ExecutorContext } from '@nx/devkit';
 import path = require('path');
 import { ParsedExecutorInterface } from '../../interfaces/parsed-executor.interface';
 import { createCommand, parseArgs, runCommandProcess } from '../../utils/executor.util';

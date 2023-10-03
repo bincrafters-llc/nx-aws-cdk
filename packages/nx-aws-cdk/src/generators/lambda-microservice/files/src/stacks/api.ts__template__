@@ -1,16 +1,69 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as path from 'path';
+import { AttributeType, Table } from "aws-cdk-lib/aws-dynamodb";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import * as apigateway from "aws-cdk-lib/aws-apigateway";
+import { Runtime } from "aws-cdk-lib/aws-lambda";
+import { CfnOutput } from "aws-cdk-lib";
 
-export class APILambda extends cdk.Stack {
+// Features for microservice:
+// - Use functionUrl or APi Gateway integration
+// - Proxy lambda function
+// - Includ dynamodb table?
+// - Audit table support
+
+export class <%= className %>APIService extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    //Dynamodb table definition
+    const table = new Table(this, '<%= className %>Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'CdkTemplateQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    // Proxy
+    const <%= propertyName %>Lambda = new NodejsFunction(this, '<%= className %>Function', {
+      runtime: Runtime.NODEJS_18_X,
+      entry: path.join(__dirname, `../functions/<%= propertyName %>-function.ts`),
+      handler: 'handler',
+      environment: {
+        <%= constantName %>_TABLE_NAME: table.tableName,
+      },
+    });
+
+    // Permissions to lambda to dynamo table
+    table.grantReadWriteData(<%= propertyName %>Lambda);
+
+    const api = new apigateway.RestApi(this, '<%= propertyName %>-api', {
+      restApiName: '<%= className %> Service',
+    });
+
+    const <%= propertyName %>Integration = new apigateway.LambdaIntegration(
+      <%= propertyName %>Lambda,
+      {
+        requestTemplates: { 'application/json': '{ "statusCode": "200" }' },
+      }
+    );
+
+    api.root.addMethod('GET', <%= propertyName %>Integration);
+    api.root.addMethod('POST', <%= propertyName %>Integration);
+
+    const customer = api.root.addResource('{id}');
+    customer.addMethod('PATCH', <%= propertyName %>Integration);
+    customer.addMethod('GET', <%= propertyName %>Integration);
+    customer.addMethod('DELETE', <%= propertyName %>Integration);
+
+    new CfnOutput(this, '<%= constantName %>ApiGatewayUrl', {
+      value: api.url,
+    });
+
+    new CfnOutput(this, '<%= constantName %>DynamoDbTableName', {
+      value: table.tableName,
+    });
+
+    new CfnOutput(this, '<%= constantName %>LambdaFunction', {
+      value: <%= propertyName %>Lambda.functionArn,
+    });
   }
 }

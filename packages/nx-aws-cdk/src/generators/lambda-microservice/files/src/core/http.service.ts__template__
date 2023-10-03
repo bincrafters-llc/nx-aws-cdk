@@ -1,0 +1,90 @@
+import { APIGatewayProxyResult } from "aws-lambda";
+
+export class HttpService {
+
+    // 20X
+
+    static Ok(payload: unknown): APIGatewayProxyResult {
+        return {
+            statusCode: 200,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        }
+    }
+
+    static Created(payload: unknown): APIGatewayProxyResult {
+        return {
+            statusCode: 201,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        }
+    }
+
+    // 40X
+
+    static BadRequest(payload: unknown): APIGatewayProxyResult {
+        return {
+            statusCode: 400,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        }
+    }
+
+    static Unauthorized(payload: unknown): APIGatewayProxyResult {
+        return {
+            statusCode: 401,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        }
+    }
+
+    static Forbidden(payload: unknown): APIGatewayProxyResult {
+        return {
+            statusCode: 403,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        }
+    }
+
+    static NotFound(payload: unknown): APIGatewayProxyResult {
+        return {
+            statusCode: 404,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        }
+    }
+ 
+    static MethodNotAllowed(method: string): APIGatewayProxyResult {
+        return {
+            statusCode: 405,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ message: `Method ${method} is not allowed` })
+        }
+    }
+
+    // 50X
+
+    static Fatal(method: string): APIGatewayProxyResult {
+        return {
+            statusCode: 500,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ message: `Method ${method} is not allowed` })
+        }
+    }
+}

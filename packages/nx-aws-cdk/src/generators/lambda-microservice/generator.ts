@@ -1,12 +1,10 @@
 import {
-  addProjectConfiguration,
   formatFiles,
   generateFiles,
-  getWorkspaceLayout,
   names,
   offsetFromRoot,
   Tree,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import * as path from 'path';
 import { LambdaMicroserviceGeneratorSchema } from './schema';
 import generateApp, { normalizeOptions as normalizeAppOptions } from '../app/generator';

@@ -1,0 +1,52 @@
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  ScanCommand,
+  PutCommand,
+  GetCommand,
+  DeleteCommand,
+} from "@aws-sdk/lib-dynamodb";
+
+const client = new DynamoDBClient({});
+const dynamo = DynamoDBDocumentClient.from(client);
+
+export class TableService {
+  constructor(private tableName: string) {}
+
+  async getById(id: string) {
+    const body = await dynamo.send(
+      new GetCommand({
+        TableName: this.tableName,
+        Key: { id },
+      })
+    );
+    return body.Item;
+  }
+
+  async list() {
+    const body = await dynamo.send(new ScanCommand({ TableName: this.tableName }));
+    return body.Items;
+  }
+
+  async put(payload: { id: string } & Record<string, any>) {
+    await dynamo.send(
+      new PutCommand({
+        TableName: this.tableName,
+        Item: payload,
+      })
+    );
+
+    return true;
+  }
+
+  async delete(id: string) {
+    await dynamo.send(
+      new DeleteCommand({
+        TableName: this.tableName,
+        Key: { id },
+      })
+    );
+
+    return true;
+  }
+}

@@ -10,15 +10,20 @@ import {
   Tree,
   updateJson,
   workspaceRoot,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import * as path from 'path';
 import { NxAwsCdkGeneratorSchema } from './schema';
 import initGenerator from '../init/generator';
-import { Linter, lintProjectGenerator } from '@nrwl/linter';
-import { jestProjectGenerator } from '@nrwl/jest';
-import { runTasksInSerial } from '@nrwl/workspace/src/utilities/run-tasks-in-serial';
+import { Linter, lintProjectGenerator } from '@nx/linter';
+import { jestProjectGenerator } from '@nx/jest';
+import { runTasksInSerial } from '@nx/workspace/src/utilities/run-tasks-in-serial';
 
 interface NormalizedSchema extends NxAwsCdkGeneratorSchema {
+  name: string;
+  className: string;
+  propertyName: string;
+  constantName: string;
+  fileName: string;
   projectName: string;
   distRoot: string;
   projectRoot: string;
@@ -30,6 +35,7 @@ export function normalizeOptions(
   tree: Tree,
   options: NxAwsCdkGeneratorSchema
 ): NormalizedSchema {
+  const allNames = names(options.name.split('/').pop());
   const name = names(options.name).fileName;
   const projectDirectory = options.directory
     ? `${names(options.directory).fileName}/${name}`
@@ -43,6 +49,7 @@ export function normalizeOptions(
 
   return {
     ...options,
+    ...allNames,
     projectName,
     distRoot,
     projectRoot,
@@ -168,7 +175,7 @@ function updateLintConfig(tree: Tree, options: NormalizedSchema) {
     updateJson(tree, `${options.projectRoot}/.eslintrc.json`, (json) => {
       json.plugins = json?.plugins || [];
       const plugins: string[] = json.plugins;
-  
+
       const hasCdkPlugin = plugins.findIndex((row) => row === 'cdk') >= 0;
       if (!hasCdkPlugin) {
         plugins.push('cdk');

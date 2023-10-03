@@ -1,0 +1,35 @@
+import * as J from "joi";
+const { object, string } = J.types();
+
+// Fpr Joi documentation check the following page: https://joi.dev/api/
+
+type Entity = { id: string } & Record<string, any>;
+
+export class ValidationService {
+  create(body: string | null): J.ValidationResult<Entity> {
+    const schema = object.keys({
+      id: string.guid(),
+      firstname: string.required().min(3),
+      lastname: string.required().min(3),
+    });
+
+    return schema.validate(JSON.parse(body || "{}"));
+  }
+
+  update(body: string | null): J.ValidationResult<Entity> {
+    const schema = object.keys({
+      id: string.guid(),
+      // add custom validation here
+    });
+
+    return schema.validate(JSON.parse(body || "{}"));
+  }
+
+  cleanValidationResponse(error: J.ValidationError) {
+    return error.details.map((d) => ({
+      message: d.message,
+      path: d.path,
+      type: d.type,
+    }));
+  }
+}

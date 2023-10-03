@@ -1,0 +1,78 @@
+import {
+  APIGatewayProxyEventQueryStringParameters,
+  APIGatewayProxyResult,
+} from "aws-lambda";
+import { HttpService } from "./http.service";
+import { TableService } from "./table.service";
+import { ValidationService } from "./validation.service";
+
+/**
+ * @author Orlando Quero
+ * Customers service
+ */
+export class <%= className %>Service {
+  constructor(
+    private table: TableService,
+    private validaton: ValidationService
+  ) {}
+
+  async get(id: string | null | undefined): Promise<APIGatewayProxyResult> {
+    if (!id) {
+      return HttpService.BadRequest({ message: "id is required" });
+    }
+
+    const doc = await this.table.getById(id);
+
+    if (!doc) {
+      return HttpService.NotFound({ message: "<%= className %> not found" });
+    }
+
+    return HttpService.Ok(doc);
+  }
+
+  async search(
+    queryStringParameters: APIGatewayProxyEventQueryStringParameters | null
+  ): Promise<APIGatewayProxyResult> {
+    const docs = await this.table.list();
+
+    return HttpService.Ok(docs);
+  }
+
+  async create(body: string | null): Promise<APIGatewayProxyResult> {
+    const { error, value } = this.validaton.create(body);
+
+    if (error) {
+      return HttpService.BadRequest(
+        this.validaton.cleanValidationResponse(error)
+      );
+    }
+
+    await this.table.put(value);
+
+    return HttpService.Ok({ success: true, message: value.id });
+  }
+
+  async update(body: string | null): Promise<APIGatewayProxyResult> {
+    const { error, value } = this.validaton.update(body);
+
+    if (error) {
+      return HttpService.BadRequest(
+        this.validaton.cleanValidationResponse(error)
+      );
+    }
+
+    await this.table.put(value);
+
+    return HttpService.Ok({ success: true, message: value.id });
+  }
+
+  async remove(id: string | null | undefined): Promise<APIGatewayProxyResult> {
+    if (!id) {
+      return HttpService.BadRequest({ message: "Id is missing" });
+    }
+
+    await this.table.delete(id);
+
+    return HttpService.Ok({ success: true, message: "" });
+  }
+}

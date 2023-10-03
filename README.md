@@ -1,3 +1,3 @@
 # Bincrafters - nx-cdk
 
-This package is still in active development and is not *recommended* for production use.
+ACTIVE development in progress, not ready to use yet :-) 
